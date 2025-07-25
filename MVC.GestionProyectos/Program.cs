@@ -1,6 +1,8 @@
+using ApiConsumer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVC.GestionProyectos.Data;
+using ModelosOrganizacion;
 
 namespace MVC.GestionProyectos
 {
@@ -8,20 +10,27 @@ namespace MVC.GestionProyectos
     {
         public static void Main(string[] args)
         {
+            Crud<Cliente>.EndPoint = "https://localhost:7084/api/Clientes";
+            Crud<Proyecto>.EndPoint = "https://localhost:7084/api/Proyectos";
+            Crud<Tarea>.EndPoint = "https://localhost:7084/api/Tareas";
+            Crud<TareaProyecto>.EndPoint = "https://localhost:7084/api/TareasProyectos";
+            Crud<ColaboradorProyecto>.EndPoint = "https://localhost:7084/api/ColaboradoresProyectos";
+            Crud<ColaboradorTarea>.EndPoint = "https://localhost:7084/api/ColaboradoresTareas";
+            Crud<LiderProyecto>.EndPoint = "https://localhost:7084/api/LideresProyectos";
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>() // Permite el uso de roles de usuario
-                .AddEntityFrameworkStores<ApplicationDbContext>(); // Conecta Identity con tu DbContext
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
             builder.Services.AddControllersWithViews();
 

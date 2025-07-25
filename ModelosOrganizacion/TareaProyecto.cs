@@ -13,6 +13,7 @@ namespace ModelosOrganizacion
         [Key]public int Id { get; set; }
         [ForeignKey(nameof(Tarea))] public int TareaId { get; set; }
         [ForeignKey(nameof(Proyecto))]public int ProyectoId { get; set; }
+        public required string Estado { get; set; }
         public Tarea? Tarea { get; set; }
         public Proyecto? Proyecto { get; set; }
     }

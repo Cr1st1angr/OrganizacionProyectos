@@ -52,6 +52,21 @@ namespace API.OrganizacionProyectos.Controllers
             return liderProyecto;
         }
 
+        [HttpGet("ProyectosLider/{idCliente}")]
+        public async Task<ActionResult<IEnumerable<LiderProyecto>>> GetProyectosPorCliente(int idCliente)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
+            connection.Open();
+            var sql = @"
+                SELECT *
+                FROM ""LideresProyectos"" WHERE ""LiderId"" = @LiderId";
+
+            var lideresProyectos = connection.Query<LiderProyecto>(sql, new { LiderId = idCliente }).ToList();
+
+            return lideresProyectos;
+
+        }
+
         // PUT: api/LideresProyectos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

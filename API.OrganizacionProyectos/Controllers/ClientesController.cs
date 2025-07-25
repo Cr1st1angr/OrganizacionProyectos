@@ -52,6 +52,20 @@ namespace API.OrganizacionProyectos.Controllers
             return cliente;
         }
 
+        [HttpGet("ClientePorUsuario/{idUsuario}")]
+        public async Task<ActionResult<Cliente>> GetClientePorUsuario(string idUsuario)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
+            connection.Open();
+            var sql = @"SELECT * FROM ""Clientes"" WHERE ""UsuarioId"" = @UsuarioId";
+            var cliente = connection.QueryFirstOrDefault<Cliente>(sql, new { UsuarioId = idUsuario });
+            if (cliente == null )
+            {
+                return NotFound();
+            }
+            return cliente;
+        }
+
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

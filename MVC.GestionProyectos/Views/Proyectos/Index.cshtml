@@ -1,0 +1,50 @@
+﻿@model IEnumerable<ModelosOrganizacion.LiderProyecto>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Crear Nuevo Proyecto</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Proyecto.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Proyecto.Descripcion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Proyecto.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Proyecto.Descripcion)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Index" asp-controller="Tareas" asp-route-id="@item.Id">Tareas</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning text-center">No se encontraron proyectos hechos por ti</div>
+        }
+
+    </tbody>
+</table>

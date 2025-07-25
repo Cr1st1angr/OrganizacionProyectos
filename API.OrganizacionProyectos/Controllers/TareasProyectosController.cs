@@ -53,6 +53,24 @@ namespace API.OrganizacionProyectos.Controllers
             return tareaProyecto;
         }
 
+        [HttpGet("TareasPorProyecto/{id}")]
+        public async Task<ActionResult<IEnumerable<TareaProyecto>>> GetTareasPorProyecto(int id)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
+            connection.Open();
+
+            var sql = @"SELECT * FROM ""TareasProyectos"" WHERE ""Id"" = @Id";
+
+            var tareaProyecto = connection.Query<TareaProyecto>(sql, new { Id = id }).ToList();
+
+            if (tareaProyecto == null)
+            {
+                return NotFound();
+            }
+
+            return tareaProyecto;
+        }
+
         // PUT: api/TareasProyectos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -94,12 +112,13 @@ namespace API.OrganizacionProyectos.Controllers
             using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
             connection.Open();
 
-            var sql = @"INSERT INTO ""TareasProyectos"" (""ProyectoId"", ""TareaId"") VALUES (@ProyectoId, @TareaId); SELECT CAST(SCOPE_IDENTITY() as int)";
+            var sql = @"INSERT INTO ""TareasProyectos"" (""ProyectoId"", ""TareaId"", ""Estado"") VALUES (@ProyectoId, @TareaId, @Estado); SELECT CAST(SCOPE_IDENTITY() as int)";
 
             var idDevuelto = connection.ExecuteScalar<int>(sql, new
             {
                 ProyectoId = tareaProyecto.ProyectoId,
-                TareaId = tareaProyecto.TareaId
+                TareaId = tareaProyecto.TareaId,
+                Estado = tareaProyecto.Estado
             });
 
             tareaProyecto.Id = idDevuelto;

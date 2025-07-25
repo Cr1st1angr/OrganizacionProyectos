@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ModelosOrganizacion;
 
 namespace MVC.GestionProyectos.Data
 {
@@ -9,5 +10,7 @@ namespace MVC.GestionProyectos.Data
             : base(options)
         {
         }
+        public DbSet<ModelosOrganizacion.Proyecto> Proyecto { get; set; } = default!;
+        public DbSet<ModelosOrganizacion.Tarea> Tarea { get; set; } = default!;
     }
 }
