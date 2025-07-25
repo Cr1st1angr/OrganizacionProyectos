@@ -34,8 +34,8 @@
                         @Html.DisplayFor(modelItem => item.Proyecto.Descripcion)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Index" asp-controller="Tareas" asp-route-id="@item.Id">Tareas</a> |
+                        <a asp-action="Invitar" asp-route-idProyecto="@item.ProyectoId">Invitar</a> |
+                        <a asp-action="Index" asp-controller="Tareas" asp-route-id="@item.ProyectoId">Tareas</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>

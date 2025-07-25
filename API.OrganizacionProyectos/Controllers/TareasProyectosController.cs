@@ -59,7 +59,7 @@ namespace API.OrganizacionProyectos.Controllers
             using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
             connection.Open();
 
-            var sql = @"SELECT * FROM ""TareasProyectos"" WHERE ""Id"" = @Id";
+            var sql = @"SELECT * FROM ""TareasProyectos"" WHERE ""ProyectoId"" = @Id";
 
             var tareaProyecto = connection.Query<TareaProyecto>(sql, new { Id = id }).ToList();
 

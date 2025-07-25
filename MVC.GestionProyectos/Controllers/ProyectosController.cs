@@ -37,6 +37,8 @@ namespace MVC.GestionProyectos.Controllers
                 proyecto.Proyecto = await Crud<Proyecto>.GetByIdAsync(proyecto.ProyectoId);
             }
 
+            ViewBag.Clientes = new List<Cliente>();
+
             return View(proyectos);
         }
 
@@ -98,6 +100,9 @@ namespace MVC.GestionProyectos.Controllers
                     LiderId = cliente.Id // Asumiendo que el ID del líder es el ID del usuario
                 };
 
+                var user = await userManager.GetUserAsync(User);
+                await userManager.AddToRoleAsync(user, "lider");
+
                 var proyectoliderCreado = await Crud<LiderProyecto>.CreateAsync(liderProyecto);
 
                 //await userManager.AddToRoleAsync(, "lider");
@@ -110,9 +115,34 @@ namespace MVC.GestionProyectos.Controllers
         }
 
         // GET: Proyectos/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Invitar(int idProyecto)
         {
-            return View();
+            Console.WriteLine($"Id del proyecto que llegó en invitar: {idProyecto}");
+            ViewBag.IdProyecto = idProyecto;
+            return View(new List<Cliente>());
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> CargarClientes(string correo)
+        {
+
+            var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cliente = await Crud<Cliente>.GetClienteByUsuario(UserId);
+            var clientes = await Crud<Cliente>.GetClientesPorCorreo(correo,cliente.Id);
+            return View("Invitar", clientes);
+        }
+
+        public ActionResult InvitarMiembro(int id, int idProyecto)
+        {
+            var miembroProyecto = new ColaboradorProyecto
+            {
+                Id = 0,
+                ProyectoId = idProyecto,
+                ColaboradorId = id
+            };
+
+            var nuevo = Crud<ColaboradorProyecto>.CreateAsync(miembroProyecto);
+            return RedirectToAction(nameof(Invitar), new { id = idProyecto});
         }
 
         // POST: Proyectos/Edit/5

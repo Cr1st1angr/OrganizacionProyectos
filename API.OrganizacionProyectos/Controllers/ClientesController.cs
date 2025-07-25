@@ -66,6 +66,17 @@ namespace API.OrganizacionProyectos.Controllers
             return cliente;
         }
 
+        [HttpGet("ClientesPorCorreo/{correo}/{id}")]
+        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientesPorCorreo(string correo, int id)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
+            connection.Open();
+            var sql = @"SELECT * FROM ""Clientes"" WHERE ""Email"" LIKE @correo AND ""Id"" != @Id";
+            var clientes = connection.Query<Cliente>(sql, new { correo = "%" + correo + "%", Id = id }).ToList();
+
+            return clientes;
+        }
+
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

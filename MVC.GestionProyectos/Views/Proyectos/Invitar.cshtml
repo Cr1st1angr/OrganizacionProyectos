@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ModelosOrganizacion.Cliente>
+@{
+    ViewData["Title"] = "Invitar a un usuario al proyecto";
+    Layout = "_Layout";
+}
+
+<form method="get" action="/Proyectos/CargarClientes" class="search-form d-flex justify-content-center mb-4">
+    <input type="text" name="correo" placeholder="Busca a un colaborador por su email" class="form-control w-50" />
+    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+</form>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning text-center">No se encontraron usuarios con ese correo</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+           
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                        <a asp-action="InvitarMiembro" asp-route-id="@item.Id" asp-route-idProyecto="@ViewBag.IdProyecto" asp-route-clientes="ViewBag.Clientes">Invitar</a> |
+                          
+                        </td>
+                    </tr>
+                }
+            
+        </tbody>
+    </table>
+    
+}

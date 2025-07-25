@@ -1,7 +1,9 @@
 ﻿using ApiConsumer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using ModelosOrganizacion;
+using System.Security.Claims;
 
 namespace MVC.GestionProyectos.Controllers
 {
@@ -10,19 +12,34 @@ namespace MVC.GestionProyectos.Controllers
         // GET: Tareas
         public async Task<ActionResult> Index(int id)
         {
+            Console.WriteLine($"Id del proyecto: {id}");
             var tareas = await Crud<TareaProyecto>.GetTareasPorProyecto(id);
-            ViewBag.IdProyecto = id;
-            if (tareas == null || tareas.Count == 0)
-            {
-                var tareasNoEncontradas = new List<TareaProyecto>();
-                return View(tareasNoEncontradas);
-            }
 
             foreach(var tarea in tareas)
             {
                 tarea.Tarea = await Crud<Tarea>.GetByIdAsync(tarea.TareaId);
             }
+            ViewBag.IdProyecto = id;
             return View(tareas);
+        }
+        public async Task<ActionResult> TareasDesarrollador()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cliente = await Crud<Cliente>.GetClienteByUsuario(userId);
+            var tareas = await Crud<ColaboradorTarea>.GetTareasColaboradores(cliente.Id);
+
+            foreach (var tarea in tareas)
+            {
+                tarea.TareaProyecto = await Crud<TareaProyecto>.GetByIdAsync(tarea.TareaProyectoId);
+            }
+
+            foreach(var tarea in tareas)
+            {
+                tarea.TareaProyecto.Tarea = await Crud<Tarea>.GetByIdAsync(tarea.TareaProyecto.TareaId);
+            }
+
+            return View(tareas);
+
         }
 
         // GET: Tareas/Details/5
@@ -41,7 +58,7 @@ namespace MVC.GestionProyectos.Controllers
         // POST: Tareas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(int idProyecto,Tarea tarea)
+        public async Task<ActionResult> Create(int idProyecto,Tarea tarea)
         {
             try
             {
@@ -52,7 +69,7 @@ namespace MVC.GestionProyectos.Controllers
                     Funcionalidad = tarea.Funcionalidad
                 };
 
-                var tareaCreada = Crud<Tarea>.CreateAsync(tareanueva);
+                var tareaCreada = await Crud<Tarea>.CreateAsync(tareanueva);
                 Console.WriteLine($"Id de proyecto: {idProyecto}");
                 var tareaProyecto = new TareaProyecto
                 {
@@ -62,8 +79,8 @@ namespace MVC.GestionProyectos.Controllers
                     Estado = "Pendiente"
                 };
 
-                var nuevaTareaProyecto = Crud<TareaProyecto>.CreateAsync(tareaProyecto);
-                return RedirectToAction(nameof(Index));
+                var nuevaTareaProyecto = await Crud<TareaProyecto>.CreateAsync(tareaProyecto);
+                return RedirectToAction(nameof(Index), new {id = idProyecto});
             }
             catch
             {

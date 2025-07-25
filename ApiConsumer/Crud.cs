@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 using ModelosOrganizacion;
+using System.Net;
 
 namespace ApiConsumer
 {
@@ -135,6 +136,11 @@ namespace ApiConsumer
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<List<LiderProyecto>>(json);
                 }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones.");
+                    return new List<LiderProyecto>();
+                }
                 else
                 {
                     throw new Exception($"Error: {response.StatusCode}");
@@ -152,6 +158,11 @@ namespace ApiConsumer
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<List<TareaProyecto>>(json);
                 }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones.");
+                    return new List<TareaProyecto>();
+                }
                 else
                 {
                     throw new Exception($"Error: {response.StatusCode}");
@@ -159,6 +170,51 @@ namespace ApiConsumer
             }
         }
 
+        public static async Task<List<Cliente>> GetClientesPorCorreo(string correo, int id)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/ClientesPorCorreo/{Uri.EscapeDataString(correo)}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var clientes = JsonConvert.DeserializeObject<List<Cliente>>(json);
+                    Console.WriteLine($"Canciones deserializadas: {clientes?.Count ?? 0}");
+                    return clientes;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron clientes.");
+                    return new List<Cliente>();
+                }
+                else
+                {
+                    throw new Exception($"Error: {response.StatusCode}");
+                }
+            }
+        }
+
+        public static async Task<List<ColaboradorTarea>> GetTareasColaboradores(int idColaborador)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/TareasPorColaborador/{idColaborador}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<ColaboradorTarea>>(json);
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron clientes.");
+                    return new List<ColaboradorTarea>();
+                }
+                else
+                {
+                    throw new Exception($"Error: {response.StatusCode}");
+                }
+            }
+        }
         public static async Task<Cliente> GetClienteByUsuario(string id)
         {
             using (var client = new HttpClient())

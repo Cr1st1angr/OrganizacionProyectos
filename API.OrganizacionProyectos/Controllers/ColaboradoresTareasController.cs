@@ -53,6 +53,18 @@ namespace API.OrganizacionProyectos.Controllers
 
             return colaboradorTarea;
         }
+        [HttpGet("TareasPorColaborador/{idColaborador}")]
+        public async Task<ActionResult<IEnumerable<ColaboradorTarea>>> ObtenerTareasPorColaborador(int idColaborador)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("OrganizacionProyectosContext"));
+            connection.Open();
+
+            var sql = @"SELECT * FROM ""ColaboradoresTareas"" WHERE ""ColaboradorId"" = @ColaboradorId";
+
+            var colaboradorTareas = connection.Query<ColaboradorTarea>(sql, new { ColaboradorId = idColaborador }).ToList();
+
+            return colaboradorTareas;
+        }
 
         // PUT: api/ColaboradoresTareas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
